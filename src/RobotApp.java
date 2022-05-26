@@ -1,3 +1,7 @@
+import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
+import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
+import com.sun.j3d.utils.behaviors.mouse.MouseWheelZoom;
+import com.sun.j3d.utils.behaviors.mouse.MouseZoom;
 import com.sun.j3d.utils.geometry.*;
 import javax.media.j3d.*;
 import javax.swing.*;
@@ -42,7 +46,7 @@ public class RobotApp extends JFrame{
         SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 
         Transform3D przesuniecie_obserwatora = new Transform3D();
-        przesuniecie_obserwatora.set(new Vector3f(0.0f,0.0f,3.0f));
+        przesuniecie_obserwatora.set(new Vector3f(0.0f,0.0f,6.0f));
 
         simpleU.getViewingPlatform().getViewPlatformTransform().setTransform(przesuniecie_obserwatora);
 
@@ -55,13 +59,28 @@ public class RobotApp extends JFrame{
 
         BoundingSphere Wiezy = new BoundingSphere();
 
+        // kamera
+        TransformGroup Myszka = new TransformGroup();
+        Myszka.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        wezel_scena.addChild(Myszka);
+
+        MouseRotate obrotKamery = new MouseRotate(Myszka);
+        obrotKamery.setSchedulingBounds(Wiezy);
+        Myszka.addChild(obrotKamery);
+
+        MouseTranslate przesuniecieKamery = new MouseTranslate(Myszka);
+        przesuniecieKamery.setSchedulingBounds(Wiezy);
+        Myszka.addChild(przesuniecieKamery);
+
+        MouseZoom zoomKamery = new MouseZoom(Myszka);
+        zoomKamery.setSchedulingBounds(Wiezy);
+        Myszka.addChild(zoomKamery);
+
+        // Światło
         AmbientLight Swiatlo = new AmbientLight();
         Swiatlo.setInfluencingBounds(Wiezy);
-        wezel_scena.addChild(Swiatlo);
+        Myszka.addChild(Swiatlo);
 
-
-        Transform3D  tmp_rot      = new Transform3D();
-        tmp_rot.rotZ(Math.PI/2);
 
         // os pionowa robota
         Appearance  wygladRobota = new Appearance();
@@ -74,7 +93,7 @@ public class RobotApp extends JFrame{
 
         TransformGroup transformacjaOsiZ = new TransformGroup(punktOsiZ);
         transformacjaOsiZ.addChild(osZ);
-        wezel_scena.addChild(transformacjaOsiZ);
+        Myszka.addChild(transformacjaOsiZ);
 
         // os pozioma robota
         Box osR = new Box(0.3f,0.05f,0.1f,wygladRobota);
@@ -84,7 +103,7 @@ public class RobotApp extends JFrame{
 
         TransformGroup transformacjaOsiR = new TransformGroup(punktOsiR);
         transformacjaOsiR.addChild(osR);
-        wezel_scena.addChild(transformacjaOsiR);
+        Myszka.addChild(transformacjaOsiR);
 
          return wezel_scena;
 
