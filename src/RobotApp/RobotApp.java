@@ -112,6 +112,63 @@ public class RobotApp extends Applet implements KeyListener {
         AmbientLight Swiatlo = new AmbientLight();
         Swiatlo.setInfluencingBounds(bounds);
         wezel_scena.addChild(Swiatlo);
+        // floor
+        Appearance floorApperance = new Appearance();
+        Texture floorTexture = new TextureLoader("images/floor.jpg", null, new Container()).getTexture();
+        floorApperance.setTexture(floorTexture);
+        Box floor = new Box(6.0f,0.01f,6.0f,Box.GENERATE_TEXTURE_COORDS,floorApperance);
+        Transform3D floorPoint = new Transform3D();
+        floorPoint.set(new Vector3f(0f,-0.86f,0.0f));
+        TransformGroup floorTransform = new TransformGroup(floorPoint);
+        floorTransform.addChild(floor);
+        wezel_scena.addChild(floorTransform);
+
+        // ceiling
+        Appearance ceilingApperance = new Appearance();
+        Texture ceilingTexture = new TextureLoader("images/ceiling.jpg", null, new Container()).getTexture();
+        ceilingApperance.setTexture(ceilingTexture);
+        Box ceiling = new Box(6.0f,0.01f,6.0f,Box.GENERATE_TEXTURE_COORDS,ceilingApperance);
+        Transform3D ceilingPoint = new Transform3D();
+        ceilingPoint.set(new Vector3f(0f,3f,0.0f));
+        TransformGroup ceilingTransform = new TransformGroup(ceilingPoint);
+        ceilingTransform.addChild(ceiling);
+        wezel_scena.addChild(ceilingTransform);
+
+        //walls
+
+        Appearance wallsApperance = new Appearance();
+        Texture wallsTexture = new TextureLoader("images/walls.jpg", null, new Container()).getTexture();
+        wallsApperance.setTexture(wallsTexture);
+        // north wall
+        Box wallN = new Box(6.0f,2f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Transform3D wallsPointN = new Transform3D();
+        wallsPointN.set(new Vector3f(0f,1f,-6.0f));
+        TransformGroup wallNTransform = new TransformGroup(wallsPointN);
+        wallNTransform.addChild(wallN);
+        wezel_scena.addChild(wallNTransform);
+        // south wall
+        Box wallS = new Box(6.0f,2f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Transform3D wallsPointS = new Transform3D();
+        wallsPointS.set(new Vector3f(0f,1f,6.0f));
+        TransformGroup wallSTransform = new TransformGroup(wallsPointS);
+        wallSTransform.addChild(wallS);
+        wezel_scena.addChild(wallSTransform);
+        // west wall
+        Box wallW = new Box(0.01f,2f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Transform3D wallsPointW = new Transform3D();
+        wallsPointW.set(new Vector3f(-6f,1f,0));
+        TransformGroup wallWTransform = new TransformGroup(wallsPointW);
+        wallWTransform.addChild(wallW);
+        wezel_scena.addChild(wallWTransform);
+        // east wall
+        Box wallE = new Box(0.01f,2f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Transform3D wallsPointE = new Transform3D();
+        wallsPointE.set(new Vector3f(6f,1f,0));
+        TransformGroup wallETransform = new TransformGroup(wallsPointE);
+        wallETransform.addChild(wallE);
+        wezel_scena.addChild(wallETransform);
+
+
 
 
         // vertical robot axis
@@ -143,7 +200,7 @@ public class RobotApp extends Applet implements KeyListener {
         fiRotation.setSchedulingBounds(boundsFi);
         fiTransform.addChild(fiRotation);
 
-        Box arm = new Box(0.3f,0.05f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance);
+        Box arm = new Box(0.3f,0.05f,0.05f,Box.GENERATE_TEXTURE_COORDS, robotApperance);
 
         Transform3D armPoint = new Transform3D();
         armPoint.set(new Vector3f(0.3f,-0.78f,0.0f));
