@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.TimerTask;
 
+import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.universe.PlatformGeometry;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 //import javafx.scene.shape.Cylinder;
@@ -115,39 +116,41 @@ public class RobotApp extends Applet implements KeyListener {
 
         // vertical robot axis
         Appearance  robotApperance = new Appearance();
-        robotApperance.setColoringAttributes(new ColoringAttributes(0.6f,0.5f,0.9f,ColoringAttributes.NICEST));
+        Texture steelTexture = new TextureLoader("images/steel.jpg", this).getTexture();
+        robotApperance.setTexture(steelTexture);
+        //robotApperance.setColoringAttributes(new ColoringAttributes(0.6f,0.5f,0.9f,ColoringAttributes.NICEST));
 
-        Cylinder zAxis = new Cylinder(0.05f,1.3f, robotApperance);
+        Cylinder zAxis = new Cylinder(0.05f,1.3f,Cylinder.GENERATE_TEXTURE_COORDS, robotApperance);
 
         Transform3D zAxisPoint = new Transform3D();
         zAxisPoint.set(new Vector3f(0f,-0.2f,0.0f));
 
-        TransformGroup transformacjaOsiZ = new TransformGroup(zAxisPoint);
-        transformacjaOsiZ.addChild(zAxis);
-        wezel_scena.addChild(transformacjaOsiZ);
+        fiTransform = new TransformGroup(zAxisPoint);
+        fiTransform.addChild(zAxis);
+        wezel_scena.addChild(fiTransform);
 
         // horizontal robot axis
         animationFi = new Alpha(-1,5000);
 
-        TransformGroup transformFi = new TransformGroup();
-        transformFi.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        wezel_scena.addChild(transformFi);
+        fiTransform = new TransformGroup();
+        fiTransform.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        wezel_scena.addChild(fiTransform);
 
         Transform3D tmp = new Transform3D();
         tmp.set(new Vector3f(0f,1f,0f));
-        fiRotation = new RotationInterpolator(animationFi, transformFi, tmp, 0, 0);
+        fiRotation = new RotationInterpolator(animationFi, fiTransform, tmp, 0, 0);
         BoundingSphere boundsFi = new BoundingSphere(new Point3d(0.0, -0.2, 0.0), 1.0);
         fiRotation.setSchedulingBounds(boundsFi);
-        transformFi.addChild(fiRotation);
+        fiTransform.addChild(fiRotation);
 
-        Box arm = new Box(0.3f,0.05f,0.1f,robotApperance);
+        Box arm = new Box(0.3f,0.05f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance);
 
         Transform3D armPoint = new Transform3D();
         armPoint.set(new Vector3f(0.3f,-0.78f,0.0f));
 
         TransformGroup armTransform = new TransformGroup(armPoint);
         armTransform.addChild(arm);
-        transformFi.addChild(armTransform);
+        fiTransform.addChild(armTransform);
 
          return wezel_scena;
 
