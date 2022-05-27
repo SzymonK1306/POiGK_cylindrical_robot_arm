@@ -34,25 +34,25 @@ public class RobotApp extends Applet implements KeyListener {
 
     private Transform3D camera = new Transform3D();
 
-    RotationInterpolator obrotFi;
+    RotationInterpolator fiRotation;
 
     private TransformGroup fiTransform;
 
-    public BoundingSphere bounds;
+    BoundingSphere bounds;
 
-    public GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
+    GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 
-    public Canvas3D canvas3D = new Canvas3D(config);
-    public SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
+    Canvas3D canvas3D = new Canvas3D(config);
+    SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 
-    private float fi=1.67f;
+    private float fi=0f;
 
     class Task extends TimerTask {
 
         @Override
         public void run() {
-            obrotFi.setMaximumAngle(fi);
-            obrotFi.setMinimumAngle(fi);
+            fiRotation.setMaximumAngle(fi);
+            fiRotation.setMinimumAngle(fi);
         }
     }
 
@@ -71,13 +71,13 @@ public class RobotApp extends Applet implements KeyListener {
         bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
 
         // add mouse behaviors to the ViewingPlatform
-        ViewingPlatform viewingPlatform = simpleU.getViewingPlatform();
+        ViewingPlatform view = simpleU.getViewingPlatform();
 
-        PlatformGeometry pg = new PlatformGeometry();
+        PlatformGeometry platform = new PlatformGeometry();
 
-        viewingPlatform.setPlatformGeometry(pg);
+        view.setPlatformGeometry(platform);
 
-        viewingPlatform.setNominalViewingTransform();
+        view.setNominalViewingTransform();
 
 
         OrbitBehavior orbit = new OrbitBehavior(canvas3D, OrbitBehavior.REVERSE_ROTATE | OrbitBehavior.STOP_ZOOM);
@@ -88,8 +88,7 @@ public class RobotApp extends Applet implements KeyListener {
         orbit.setTransFactors(0.25, 0.25);
         orbit.setZoomFactor(0.25);
         orbit.setSchedulingBounds(bounds);
-        viewingPlatform.setViewPlatformBehavior(orbit);
-
+        view.setViewPlatformBehavior(orbit);
 
         // Ensure at least 5 msec per frame (i.e., < 200Hz)
         simpleU.getViewer().getView().setMinimumFrameCycleTime(5);
@@ -108,52 +107,47 @@ public class RobotApp extends Applet implements KeyListener {
 
         BranchGroup wezel_scena = new BranchGroup();
 
-        // Światło
+        // Lights
         AmbientLight Swiatlo = new AmbientLight();
         Swiatlo.setInfluencingBounds(bounds);
         wezel_scena.addChild(Swiatlo);
 
 
-        // os pionowa robota
-        Appearance  wygladRobota = new Appearance();
-        wygladRobota.setColoringAttributes(new ColoringAttributes(0.6f,0.5f,0.9f,ColoringAttributes.NICEST));
+        // vertical robot axis
+        Appearance  robotApperance = new Appearance();
+        robotApperance.setColoringAttributes(new ColoringAttributes(0.6f,0.5f,0.9f,ColoringAttributes.NICEST));
 
-        Cylinder osZ = new Cylinder(0.05f,1.3f, wygladRobota);
+        Cylinder zAxis = new Cylinder(0.05f,1.3f, robotApperance);
 
-        Transform3D punktOsiZ = new Transform3D();
-        punktOsiZ.set(new Vector3f(0f,-0.2f,0.0f));
+        Transform3D zAxisPoint = new Transform3D();
+        zAxisPoint.set(new Vector3f(0f,-0.2f,0.0f));
 
-        TransformGroup transformacjaOsiZ = new TransformGroup(punktOsiZ);
-        transformacjaOsiZ.addChild(osZ);
+        TransformGroup transformacjaOsiZ = new TransformGroup(zAxisPoint);
+        transformacjaOsiZ.addChild(zAxis);
         wezel_scena.addChild(transformacjaOsiZ);
 
-        // os pozioma robota
+        // horizontal robot axis
         animationFi = new Alpha(-1,5000);
 
-        TransformGroup transformacjaFi = new TransformGroup();
-        transformacjaFi.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        wezel_scena.addChild(transformacjaFi);
+        TransformGroup transformFi = new TransformGroup();
+        transformFi.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        wezel_scena.addChild(transformFi);
 
         Transform3D tmp = new Transform3D();
         tmp.set(new Vector3f(0f,1f,0f));
-        obrotFi = new RotationInterpolator(animationFi, transformacjaFi, tmp, 0, 0);
-        BoundingSphere Wiezy = new BoundingSphere(new Point3d(0.0, -0.2, 0.0), 1.0);
-        obrotFi.setSchedulingBounds(Wiezy);
-        transformacjaFi.addChild(obrotFi);
+        fiRotation = new RotationInterpolator(animationFi, transformFi, tmp, 0, 0);
+        BoundingSphere boundsFi = new BoundingSphere(new Point3d(0.0, -0.2, 0.0), 1.0);
+        fiRotation.setSchedulingBounds(boundsFi);
+        transformFi.addChild(fiRotation);
 
-        Box arm = new Box(0.3f,0.05f,0.1f,wygladRobota);
+        Box arm = new Box(0.3f,0.05f,0.1f,robotApperance);
 
         Transform3D armPoint = new Transform3D();
         armPoint.set(new Vector3f(0.3f,-0.78f,0.0f));
 
         TransformGroup armTransform = new TransformGroup(armPoint);
         armTransform.addChild(arm);
-        transformacjaFi.addChild(armTransform);
-        //wezel_scena.addChild(armTransform);
-
-        // obrot fi
-
-
+        transformFi.addChild(armTransform);
 
          return wezel_scena;
 
@@ -168,7 +162,7 @@ public class RobotApp extends Applet implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
             System.out.println(fi);
-            fi-=0.02;
+            fi-=0.02;       // angle (radians)
         }
         if (e.getKeyCode()==KeyEvent.VK_D){
             System.out.println(fi);
