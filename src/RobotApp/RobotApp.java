@@ -45,7 +45,7 @@ public class RobotApp extends Applet implements KeyListener {
     public Canvas3D canvas3D = new Canvas3D(config);
     public SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 
-    private float fi=3.14f;
+    private float fi=1.67f;
 
     class Task extends TimerTask {
 
@@ -77,8 +77,6 @@ public class RobotApp extends Applet implements KeyListener {
 
         viewingPlatform.setPlatformGeometry(pg);
 
-        // This will move the ViewPlatform back a bit so the
-        // objects in the scene can be viewed.
         viewingPlatform.setNominalViewingTransform();
 
 
@@ -130,27 +128,31 @@ public class RobotApp extends Applet implements KeyListener {
         wezel_scena.addChild(transformacjaOsiZ);
 
         // os pozioma robota
-        Box osR = new Box(0.3f,0.05f,0.1f,wygladRobota);
+        animationFi = new Alpha(-1,5000);
+
+        TransformGroup transformacjaFi = new TransformGroup();
+        transformacjaFi.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        wezel_scena.addChild(transformacjaFi);
+
+        Transform3D tmp = new Transform3D();
+        tmp.set(new Vector3f(0f,1f,0f));
+        obrotFi = new RotationInterpolator(animationFi, transformacjaFi, tmp, 0, 0);
+        BoundingSphere Wiezy = new BoundingSphere(new Point3d(0.0, -0.2, 0.0), 1.0);
+        obrotFi.setSchedulingBounds(Wiezy);
+        transformacjaFi.addChild(obrotFi);
+
+        Box arm = new Box(0.3f,0.05f,0.1f,wygladRobota);
 
         Transform3D armPoint = new Transform3D();
         armPoint.set(new Vector3f(0.3f,-0.78f,0.0f));
 
         TransformGroup armTransform = new TransformGroup(armPoint);
-        armTransform.addChild(osR);
-        wezel_scena.addChild(armTransform);
+        armTransform.addChild(arm);
+        transformacjaFi.addChild(armTransform);
+        //wezel_scena.addChild(armTransform);
 
         // obrot fi
-        animationFi = new Alpha(-1,5000);
-        Transform3D tmp = new Transform3D();
 
-        TransformGroup transformacjaFi = new TransformGroup();
-        wezel_scena.addChild(transformacjaFi);
-
-
-        tmp.set(new Vector3f(0f,1f,0f));
-        obrotFi = new RotationInterpolator(animationFi, armTransform);
-        obrotFi.setSchedulingBounds(bounds);
-        armTransform.addChild(obrotFi);
 
 
          return wezel_scena;
@@ -164,7 +166,14 @@ public class RobotApp extends Applet implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-
+        if (e.getKeyCode() == KeyEvent.VK_A) {
+            System.out.println(fi);
+            fi-=0.02;
+        }
+        if (e.getKeyCode()==KeyEvent.VK_D){
+            System.out.println(fi);
+            fi+=0.02;
+        }
     }
 
     @Override
