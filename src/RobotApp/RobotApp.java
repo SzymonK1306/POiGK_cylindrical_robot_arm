@@ -48,6 +48,7 @@ public class RobotApp extends Applet implements KeyListener {
 
     private float fi=0f;
 
+    // task which is done in every 30 milliseconds
     class Task extends TimerTask {
 
         @Override
@@ -94,11 +95,12 @@ public class RobotApp extends Applet implements KeyListener {
         // Ensure at least 5 msec per frame (i.e., < 200Hz)
         simpleU.getViewer().getView().setMinimumFrameCycleTime(5);
 
+        // camera initial position
         camera.set(new Vector3f(0f, 0f, 5f));
         simpleU.getViewingPlatform().getViewPlatformTransform().setTransform(camera);
         simpleU.addBranchGraph(scene);
 
-
+        // Timer
         clock = new java.util.Timer();
         clock.scheduleAtFixedRate(new Task(), 0, 30);
 
@@ -193,6 +195,7 @@ public class RobotApp extends Applet implements KeyListener {
         fiTransform.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         wezel_scena.addChild(fiTransform);
 
+        // rotation fi
         Transform3D tmp = new Transform3D();
         tmp.set(new Vector3f(0f,1f,0f));
         fiRotation = new RotationInterpolator(animationFi, fiTransform, tmp, 0, 0);
@@ -218,6 +221,7 @@ public class RobotApp extends Applet implements KeyListener {
 
     }
 
+    // function to control robot using keyboard
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
