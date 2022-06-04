@@ -174,12 +174,21 @@ public class RobotApp extends Applet implements KeyListener {
 
 
         // vertical robot axis
-        Appearance  robotApperance = new Appearance();
+        Appearance  robotApperance1 = new Appearance();
         Texture steelTexture = new TextureLoader("images/steel.jpg", this).getTexture();
-        robotApperance.setTexture(steelTexture);
-        //robotApperance.setColoringAttributes(new ColoringAttributes(0.6f,0.5f,0.9f,ColoringAttributes.NICEST));
+        robotApperance1.setTexture(steelTexture);
+        Appearance  robotApperance2 = new Appearance();
+        Texture lightSteelTexture = new TextureLoader("images/lightSteel.jpg", this).getTexture();
+        robotApperance2.setTexture(lightSteelTexture);
+        //robotApperance1.setColoringAttributes(new ColoringAttributes(0.6f,0.5f,0.9f,ColoringAttributes.NICEST));
+        Box stand = new Box(0.15f,0.02f,0.15f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
+        Transform3D standPoint = new Transform3D();
+        standPoint.set(new Vector3f(0f,-0.83f,0f));
+        TransformGroup standTransform = new TransformGroup(standPoint);
+        standTransform.addChild(stand);
+        wezel_scena.addChild(standTransform);
 
-        Cylinder zAxis = new Cylinder(0.05f,1.3f,Cylinder.GENERATE_TEXTURE_COORDS, robotApperance);
+        Cylinder zAxis = new Cylinder(0.05f,1.3f,Cylinder.GENERATE_TEXTURE_COORDS, robotApperance2);
 
         Transform3D zAxisPoint = new Transform3D();
         zAxisPoint.set(new Vector3f(0f,-0.2f,0.0f));
@@ -199,18 +208,30 @@ public class RobotApp extends Applet implements KeyListener {
         Transform3D tmp = new Transform3D();
         tmp.set(new Vector3f(0f,1f,0f));
         fiRotation = new RotationInterpolator(animationFi, fiTransform, tmp, 0, 0);
-        BoundingSphere boundsFi = new BoundingSphere(new Point3d(0.0, -0.2, 0.0), 1.0);
+        BoundingSphere boundsFi = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1.0);
         fiRotation.setSchedulingBounds(boundsFi);
         fiTransform.addChild(fiRotation);
 
-        Box arm = new Box(0.3f,0.05f,0.05f,Box.GENERATE_TEXTURE_COORDS, robotApperance);
+        Box arm = new Box(0.3f,0.05f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
 
         Transform3D armPoint = new Transform3D();
-        armPoint.set(new Vector3f(0.3f,-0.78f,0.0f));
+        armPoint.set(new Vector3f(0.3f,-0.7f,0.0f));
 
         TransformGroup armTransform = new TransformGroup(armPoint);
         armTransform.addChild(arm);
         fiTransform.addChild(armTransform);
+
+        Cylinder rAxis = new Cylinder(0.02f, 0.6f,Cylinder.GENERATE_TEXTURE_COORDS, robotApperance2);
+
+        Transform3D rAxisPoint = new Transform3D();
+        rAxisPoint.set(new Vector3f(0.3f,0.0f,0.0f));
+        Transform3D rotationAngle = new Transform3D();
+        rotationAngle.rotZ(Math.PI/2);
+        rAxisPoint.mul(rotationAngle);
+
+        TransformGroup rAxisGroup = new TransformGroup(rAxisPoint);
+        rAxisGroup.addChild(rAxis);
+        armTransform.addChild(rAxisGroup);
 
          return wezel_scena;
 
@@ -225,11 +246,9 @@ public class RobotApp extends Applet implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
-            System.out.println(fi);
             fi-=0.02;       // angle (radians)
         }
         if (e.getKeyCode()==KeyEvent.VK_D){
-            System.out.println(fi);
             fi+=0.02;
         }
     }
