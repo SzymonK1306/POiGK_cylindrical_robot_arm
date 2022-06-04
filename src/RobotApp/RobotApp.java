@@ -34,10 +34,14 @@ public class RobotApp extends Applet implements KeyListener {
     Alpha animationFi;
 
     private Transform3D camera = new Transform3D();
+    Transform3D rAxisPoint;
+    Transform3D armPoint;
 
     RotationInterpolator fiRotation;
 
     private TransformGroup fiTransform;
+    TransformGroup armTransform;
+    TransformGroup rAxisGroup;
 
     BoundingSphere bounds;
 
@@ -47,6 +51,9 @@ public class RobotApp extends Applet implements KeyListener {
     SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 
     private float fi=0f;
+    private float r = 0.3f;
+
+    private float z = -0.7f;
 
     // task which is done in every 30 milliseconds
     class Task extends TimerTask {
@@ -193,9 +200,9 @@ public class RobotApp extends Applet implements KeyListener {
         Transform3D zAxisPoint = new Transform3D();
         zAxisPoint.set(new Vector3f(0f,-0.2f,0.0f));
 
-        fiTransform = new TransformGroup(zAxisPoint);
-        fiTransform.addChild(zAxis);
-        wezel_scena.addChild(fiTransform);
+        TransformGroup zAxisTransform = new TransformGroup(zAxisPoint);
+        zAxisTransform.addChild(zAxis);
+        wezel_scena.addChild(zAxisTransform);
 
         // horizontal robot axis
         animationFi = new Alpha(-1,5000);
@@ -214,22 +221,24 @@ public class RobotApp extends Applet implements KeyListener {
 
         Box arm = new Box(0.3f,0.05f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
 
-        Transform3D armPoint = new Transform3D();
+        armPoint = new Transform3D();
         armPoint.set(new Vector3f(0.3f,-0.7f,0.0f));
 
-        TransformGroup armTransform = new TransformGroup(armPoint);
+        armTransform = new TransformGroup();
+        armTransform.setTransform(armPoint);
         armTransform.addChild(arm);
         fiTransform.addChild(armTransform);
 
         Cylinder rAxis = new Cylinder(0.02f, 0.6f,Cylinder.GENERATE_TEXTURE_COORDS, robotApperance2);
 
-        Transform3D rAxisPoint = new Transform3D();
-        rAxisPoint.set(new Vector3f(0.3f,0.0f,0.0f));
+        rAxisPoint = new Transform3D();
+        rAxisPoint.set(new Vector3f(r,0.0f,0.0f));
         Transform3D rotationAngle = new Transform3D();
         rotationAngle.rotZ(Math.PI/2);
         rAxisPoint.mul(rotationAngle);
 
-        TransformGroup rAxisGroup = new TransformGroup(rAxisPoint);
+        rAxisGroup = new TransformGroup();
+        rAxisGroup.setTransform(rAxisPoint);
         rAxisGroup.addChild(rAxis);
         armTransform.addChild(rAxisGroup);
 
@@ -245,11 +254,25 @@ public class RobotApp extends Applet implements KeyListener {
     // function to control robot using keyboard
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_A) {
+        if (e.getKeyCode() == KeyEvent.VK_Q) {
             fi-=0.02;       // angle (radians)
         }
-        if (e.getKeyCode()==KeyEvent.VK_D){
+        if (e.getKeyCode()==KeyEvent.VK_E){
             fi+=0.02;
+        }
+        if (e.getKeyCode()==KeyEvent.VK_A){
+            System.out.println(r);
+            r-=0.02;
+        }
+        if (e.getKeyCode()==KeyEvent.VK_D){
+            System.out.println(r);
+            r+=0.02;
+        }
+        if (e.getKeyCode()==KeyEvent.VK_W){
+            z+=0.02;
+        }
+        if (e.getKeyCode()==KeyEvent.VK_S){
+            z-=0.02;
         }
     }
 
