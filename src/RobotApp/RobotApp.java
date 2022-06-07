@@ -62,6 +62,10 @@ public class RobotApp extends Applet implements KeyListener {
         public void run() {
             fiRotation.setMaximumAngle(fi);
             fiRotation.setMinimumAngle(fi);
+            rAxisPoint.setTranslation(new Vector3f(r, 0, 0));
+            rAxisGroup.setTransform(rAxisPoint);
+            armPoint.setTranslation(new Vector3f(0.3f, z, 0));
+            armTransform.setTransform(armPoint);
         }
     }
 
@@ -225,6 +229,7 @@ public class RobotApp extends Applet implements KeyListener {
         armPoint.set(new Vector3f(0.3f,-0.7f,0.0f));
 
         armTransform = new TransformGroup();
+        armTransform.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         armTransform.setTransform(armPoint);
         armTransform.addChild(arm);
         fiTransform.addChild(armTransform);
@@ -238,6 +243,7 @@ public class RobotApp extends Applet implements KeyListener {
         rAxisPoint.mul(rotationAngle);
 
         rAxisGroup = new TransformGroup();
+        rAxisGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         rAxisGroup.setTransform(rAxisPoint);
         rAxisGroup.addChild(rAxis);
         armTransform.addChild(rAxisGroup);
@@ -261,18 +267,20 @@ public class RobotApp extends Applet implements KeyListener {
             fi+=0.02;
         }
         if (e.getKeyCode()==KeyEvent.VK_A){
-            System.out.println(r);
-            r-=0.02;
+            if (r >0)
+                r-=0.02;
         }
         if (e.getKeyCode()==KeyEvent.VK_D){
-            System.out.println(r);
-            r+=0.02;
+            if (r<0.6)
+                r+=0.02;
         }
         if (e.getKeyCode()==KeyEvent.VK_W){
-            z+=0.02;
+            if (z<0.3)
+                z+=0.02;
         }
         if (e.getKeyCode()==KeyEvent.VK_S){
-            z-=0.02;
+            if (z>-0.7)
+                z-=0.02;
         }
     }
 
