@@ -39,6 +39,8 @@ public class RobotApp extends Applet implements KeyListener {
 
     RotationInterpolator fiRotation;
 
+    Vector3f cameraPosition = new Vector3f(0f, 0f, 5f);
+
     private TransformGroup fiTransform;
     TransformGroup armTransform;
     TransformGroup rAxisGroup;
@@ -107,7 +109,7 @@ public class RobotApp extends Applet implements KeyListener {
         simpleU.getViewer().getView().setMinimumFrameCycleTime(5);
 
         // camera initial position
-        camera.set(new Vector3f(0f, 0f, 5f));
+        camera.set(cameraPosition);
         simpleU.getViewingPlatform().getViewPlatformTransform().setTransform(camera);
         simpleU.addBranchGraph(scene);
 
@@ -281,6 +283,10 @@ public class RobotApp extends Applet implements KeyListener {
         if (e.getKeyCode()==KeyEvent.VK_S){
             if (z>-0.7)
                 z-=0.02;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_R) {
+            camera.set(cameraPosition);
+            simpleU.getViewingPlatform().getViewPlatformTransform().setTransform(camera);
         }
     }
 
