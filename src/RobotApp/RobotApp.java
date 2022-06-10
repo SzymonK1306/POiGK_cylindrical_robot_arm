@@ -225,6 +225,7 @@ public class RobotApp extends Applet implements KeyListener {
         fiRotation.setSchedulingBounds(boundsFi);
         fiTransform.addChild(fiRotation);
 
+        // robotic arm
         Box arm = new Box(0.3f,0.05f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
 
         armPoint = new Transform3D();
@@ -236,6 +237,7 @@ public class RobotApp extends Applet implements KeyListener {
         armTransform.addChild(arm);
         fiTransform.addChild(armTransform);
 
+        // r axis
         Cylinder rAxis = new Cylinder(0.02f, 0.6f,Cylinder.GENERATE_TEXTURE_COORDS, robotApperance2);
 
         rAxisPoint = new Transform3D();
@@ -249,6 +251,32 @@ public class RobotApp extends Applet implements KeyListener {
         rAxisGroup.setTransform(rAxisPoint);
         rAxisGroup.addChild(rAxis);
         armTransform.addChild(rAxisGroup);
+
+        // manipulator
+        TransformGroup manipulatorGroup = new TransformGroup();
+        rAxisGroup.addChild(manipulatorGroup);
+
+        // manipulator stand
+        Box manipulatorStand = new Box(0.02f,0.01f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
+        Transform3D manipulatorStandPoint = new Transform3D();
+        manipulatorStandPoint.set(new Vector3f(0,-r,0));    // why minus???
+        TransformGroup manipulatorStandGroup = new TransformGroup(manipulatorStandPoint);
+        manipulatorStandGroup.addChild(manipulatorStand);
+        manipulatorGroup.addChild(manipulatorStandGroup);
+
+        Box manipulatorRight = new Box(0.005f,0.1f,0.02f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
+        Transform3D manipulatorRightPoint = new Transform3D();
+        manipulatorRightPoint.set(new Vector3f(-0.015f,-r-0.09f,0.07f));    // why minus???
+        TransformGroup manipulatorRightGroup = new TransformGroup(manipulatorRightPoint);
+        manipulatorRightGroup.addChild(manipulatorRight);
+        manipulatorGroup.addChild(manipulatorRightGroup);
+
+        Box manipulatorLeft = new Box(0.005f,0.1f,0.02f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
+        Transform3D manipulatorLeftPoint = new Transform3D();
+        manipulatorLeftPoint.set(new Vector3f(-0.015f,-r-0.09f,-0.07f));    // why minus???
+        TransformGroup manipulatorLeftGroup = new TransformGroup(manipulatorLeftPoint);
+        manipulatorLeftGroup.addChild(manipulatorLeft);
+        manipulatorGroup.addChild(manipulatorLeftGroup);
 
          return wezel_scena;
 
@@ -269,7 +297,7 @@ public class RobotApp extends Applet implements KeyListener {
             fi+=0.02;
         }
         if (e.getKeyCode()==KeyEvent.VK_A){
-            if (r >0)
+            if (r >0.05)
                 r-=0.02;
         }
         if (e.getKeyCode()==KeyEvent.VK_D){
