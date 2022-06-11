@@ -144,7 +144,7 @@ public class RobotApp extends Applet implements KeyListener {
         ceilingApperance.setTexture(ceilingTexture);
         Box ceiling = new Box(6.0f,0.01f,6.0f,Box.GENERATE_TEXTURE_COORDS,ceilingApperance);
         Transform3D ceilingPoint = new Transform3D();
-        ceilingPoint.set(new Vector3f(0f,3f,0.0f));
+        ceilingPoint.set(new Vector3f(0f,5f,0.0f));
         TransformGroup ceilingTransform = new TransformGroup(ceilingPoint);
         ceilingTransform.addChild(ceiling);
         wezel_scena.addChild(ceilingTransform);
@@ -155,30 +155,30 @@ public class RobotApp extends Applet implements KeyListener {
         Texture wallsTexture = new TextureLoader("images/walls.jpg", null, new Container()).getTexture();
         wallsApperance.setTexture(wallsTexture);
         // north wall
-        Box wallN = new Box(6.0f,2f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Box wallN = new Box(6.0f,3f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointN = new Transform3D();
-        wallsPointN.set(new Vector3f(0f,1f,-6.0f));
+        wallsPointN.set(new Vector3f(0f,2f,-6.0f));
         TransformGroup wallNTransform = new TransformGroup(wallsPointN);
         wallNTransform.addChild(wallN);
         wezel_scena.addChild(wallNTransform);
         // south wall
-        Box wallS = new Box(6.0f,2f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Box wallS = new Box(6.0f,3f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointS = new Transform3D();
-        wallsPointS.set(new Vector3f(0f,1f,6.0f));
+        wallsPointS.set(new Vector3f(0f,2f,6.0f));
         TransformGroup wallSTransform = new TransformGroup(wallsPointS);
         wallSTransform.addChild(wallS);
         wezel_scena.addChild(wallSTransform);
         // west wall
-        Box wallW = new Box(0.01f,2f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Box wallW = new Box(0.01f,3f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointW = new Transform3D();
-        wallsPointW.set(new Vector3f(-6f,1f,0));
+        wallsPointW.set(new Vector3f(-6f,2f,0));
         TransformGroup wallWTransform = new TransformGroup(wallsPointW);
         wallWTransform.addChild(wallW);
         wezel_scena.addChild(wallWTransform);
         // east wall
-        Box wallE = new Box(0.01f,2f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
+        Box wallE = new Box(0.01f,3f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointE = new Transform3D();
-        wallsPointE.set(new Vector3f(6f,1f,0));
+        wallsPointE.set(new Vector3f(6f,2f,0));
         TransformGroup wallETransform = new TransformGroup(wallsPointE);
         wallETransform.addChild(wallE);
         wezel_scena.addChild(wallETransform);
@@ -243,7 +243,7 @@ public class RobotApp extends Applet implements KeyListener {
         rAxisPoint = new Transform3D();
         rAxisPoint.set(new Vector3f(r,0.0f,0.0f));
         Transform3D rotationAngle = new Transform3D();
-        rotationAngle.rotZ(Math.PI/2);
+        rotationAngle.rotZ(-Math.PI/2);
         rAxisPoint.mul(rotationAngle);
 
         rAxisGroup = new TransformGroup();
@@ -259,21 +259,21 @@ public class RobotApp extends Applet implements KeyListener {
         // manipulator stand
         Box manipulatorStand = new Box(0.02f,0.01f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
         Transform3D manipulatorStandPoint = new Transform3D();
-        manipulatorStandPoint.set(new Vector3f(0,-r,0));    // why minus???
+        manipulatorStandPoint.set(new Vector3f(0,r,0));
         TransformGroup manipulatorStandGroup = new TransformGroup(manipulatorStandPoint);
         manipulatorStandGroup.addChild(manipulatorStand);
         manipulatorGroup.addChild(manipulatorStandGroup);
 
         Box manipulatorRight = new Box(0.005f,0.1f,0.02f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
         Transform3D manipulatorRightPoint = new Transform3D();
-        manipulatorRightPoint.set(new Vector3f(-0.015f,-r-0.09f,0.07f));    // why minus???
+        manipulatorRightPoint.set(new Vector3f(0.015f,r+0.09f,0.07f));
         TransformGroup manipulatorRightGroup = new TransformGroup(manipulatorRightPoint);
         manipulatorRightGroup.addChild(manipulatorRight);
         manipulatorGroup.addChild(manipulatorRightGroup);
 
         Box manipulatorLeft = new Box(0.005f,0.1f,0.02f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
         Transform3D manipulatorLeftPoint = new Transform3D();
-        manipulatorLeftPoint.set(new Vector3f(-0.015f,-r-0.09f,-0.07f));    // why minus???
+        manipulatorLeftPoint.set(new Vector3f(0.015f,r+0.09f,-0.07f));
         TransformGroup manipulatorLeftGroup = new TransformGroup(manipulatorLeftPoint);
         manipulatorLeftGroup.addChild(manipulatorLeft);
         manipulatorGroup.addChild(manipulatorLeftGroup);
