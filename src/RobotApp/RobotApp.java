@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.TimerTask;
 import java.lang.Math;
+import javax.swing.*;
 
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.universe.PlatformGeometry;
@@ -58,8 +59,6 @@ public class RobotApp extends Applet implements KeyListener {
     private float fi=0f;
     private float r = 0.3f;
     private float z = -0.7f;
-    private float x = 0.0f;
-    private float y = 0.0f;
 
     // task which is done in every 30 milliseconds
     class Task extends TimerTask {
@@ -328,17 +327,31 @@ public class RobotApp extends Applet implements KeyListener {
             z=-0.7f;
         }
         if (e.getKeyCode() == KeyEvent.VK_K) {
-            x=panel.getXvalue();
-            y=panel.getYvalue();
-            z=panel.getZvalue()-0.7f;
-            r= (float)Math.sqrt(x*x+y*y)-0.3f;
-            fi=(float)Math.atan2(y,x);
+            inverseKinematic();
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    public void inverseKinematic(){
+        float x = panel.getXvalue();
+        float y = panel.getYvalue();
+        float z1 = panel.getZvalue()-0.7f;
+        float r1 = (float)Math.sqrt(x*x+y*y)-0.3f;
+        if ((r1<=0.6f) && (r1>=0f) && (z1<=0.3f) && (z1>=-0.7f)){
+            r=r1;
+            z=z1;
+            fi=(float)Math.atan2(y,x);
+        }
+        else {
+            JOptionPane.showMessageDialog(null,
+                    "Robot can't reach this position, change the value of x,y,z",
+                    "Wrong coordinates",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     public static void main(String args[]){
