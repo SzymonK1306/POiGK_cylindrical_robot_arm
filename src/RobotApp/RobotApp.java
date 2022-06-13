@@ -52,6 +52,8 @@ public class RobotApp extends Applet implements KeyListener {
     Canvas3D canvas3D = new Canvas3D(config);
     SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 
+    RobotPanel panel = new RobotPanel();
+
     private float fi=0f;
     private float r = 0.3f;
 
@@ -112,6 +114,8 @@ public class RobotApp extends Applet implements KeyListener {
         camera.set(cameraPosition);
         simpleU.getViewingPlatform().getViewPlatformTransform().setTransform(camera);
         simpleU.addBranchGraph(scene);
+
+        add("North", panel);
 
         // Timer
         clock = new java.util.Timer();
@@ -315,6 +319,11 @@ public class RobotApp extends Applet implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_R) {
             camera.set(cameraPosition);
             simpleU.getViewingPlatform().getViewPlatformTransform().setTransform(camera);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_F) {
+            fi=0;
+            r=0.3f;
+            z=-0.7f;
         }
     }
 
