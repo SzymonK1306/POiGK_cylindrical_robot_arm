@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.TimerTask;
+import java.lang.Math;
 
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.universe.PlatformGeometry;
@@ -56,8 +57,9 @@ public class RobotApp extends Applet implements KeyListener {
 
     private float fi=0f;
     private float r = 0.3f;
-
     private float z = -0.7f;
+    private float x = 0.0f;
+    private float y = 0.0f;
 
     // task which is done in every 30 milliseconds
     class Task extends TimerTask {
@@ -324,6 +326,13 @@ public class RobotApp extends Applet implements KeyListener {
             fi=0;
             r=0.3f;
             z=-0.7f;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_K) {
+            x=panel.getXvalue();
+            y=panel.getYvalue();
+            z=panel.getZvalue()-0.7f;
+            r= (float)Math.sqrt(x*x+y*y)-0.3f;
+            fi=(float)Math.atan2(y,x);
         }
     }
 
