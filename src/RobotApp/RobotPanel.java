@@ -97,10 +97,10 @@ public class RobotPanel extends javax.swing.JPanel{
         xTextField.setText("0.0");
 
         yTextField.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        yTextField.setText("0.0");
+        yTextField.setText("0.3");
 
         zTextField.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        zTextField.setText("0.0");
+        zTextField.setText("0.2");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

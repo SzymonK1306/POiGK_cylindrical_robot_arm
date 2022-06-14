@@ -60,7 +60,21 @@ public class RobotApp extends Applet implements KeyListener {
     private float r = 0.3f;
     private float z = -0.7f;
 
-    // task which is done in every 30 milliseconds
+    private float new_fi=0f;
+    private float new_r = 0.3f;
+    private float new_z = -0.7f;
+
+    private int dr = 0;
+    private int dz = 0;
+    private int dfi = 0;
+
+    private boolean inverse = false;
+
+//    private int i=0;
+//    private int j=0;
+//    private int k=0;
+
+    // task which is done in every 17 milliseconds
     class Task extends TimerTask {
 
         @Override
@@ -71,6 +85,24 @@ public class RobotApp extends Applet implements KeyListener {
             rAxisGroup.setTransform(rAxisPoint);
             armPoint.setTranslation(new Vector3f(0.3f, z, 0));
             armTransform.setTransform(armPoint);
+            if (inverse) {
+                dr = (int)((new_r-r)*100);
+                dz=(int)((new_z-z)*100);
+                dfi=(int)((new_fi-fi)*100);
+                if (0!=dfi){
+                    fi=fi+Math.signum(dfi)*0.01f;
+                }
+                else if (0!=dz){
+                    z=z+Math.signum(dz)*0.01f;
+                }
+                else if (0!=dr){
+                    r=r+Math.signum(dr)*0.01f;
+                }
+                else {
+                    inverse=false;
+                }
+
+            }
         }
     }
 
@@ -328,6 +360,7 @@ public class RobotApp extends Applet implements KeyListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_K) {
             inverseKinematic();
+            inverse=true;
         }
     }
 
@@ -342,9 +375,9 @@ public class RobotApp extends Applet implements KeyListener {
         float z1 = panel.getZvalue()-0.7f;
         float r1 = (float)Math.sqrt(x*x+y*y)-0.3f;
         if ((r1<=0.6f) && (r1>=0f) && (z1<=0.3f) && (z1>=-0.7f)){
-            r=r1;
-            z=z1;
-            fi=(float)Math.atan2(y,x);
+            new_r=r1;
+            new_z=z1;
+            new_fi=(float)Math.atan2(y,x);
         }
         else {
             JOptionPane.showMessageDialog(null,
