@@ -24,6 +24,7 @@ import javax.media.j3d.Transform3D;
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.universe.ViewingPlatform;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
@@ -164,6 +165,7 @@ public class RobotApp extends Applet implements KeyListener {
         AmbientLight Swiatlo = new AmbientLight();
         Swiatlo.setInfluencingBounds(bounds);
         wezel_scena.addChild(Swiatlo);
+
         // floor
         Appearance floorApperance = new Appearance();
         Texture floorTexture = new TextureLoader("images/floor.jpg", null, new Container()).getTexture();
@@ -187,10 +189,10 @@ public class RobotApp extends Applet implements KeyListener {
         wezel_scena.addChild(ceilingTransform);
 
         //walls
-
         Appearance wallsApperance = new Appearance();
         Texture wallsTexture = new TextureLoader("images/walls.jpg", null, new Container()).getTexture();
         wallsApperance.setTexture(wallsTexture);
+
         // north wall
         Box wallN = new Box(6.0f,3f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointN = new Transform3D();
@@ -198,6 +200,7 @@ public class RobotApp extends Applet implements KeyListener {
         TransformGroup wallNTransform = new TransformGroup(wallsPointN);
         wallNTransform.addChild(wallN);
         wezel_scena.addChild(wallNTransform);
+
         // south wall
         Box wallS = new Box(6.0f,3f,0.01f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointS = new Transform3D();
@@ -205,6 +208,7 @@ public class RobotApp extends Applet implements KeyListener {
         TransformGroup wallSTransform = new TransformGroup(wallsPointS);
         wallSTransform.addChild(wallS);
         wezel_scena.addChild(wallSTransform);
+
         // west wall
         Box wallW = new Box(0.01f,3f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointW = new Transform3D();
@@ -212,6 +216,7 @@ public class RobotApp extends Applet implements KeyListener {
         TransformGroup wallWTransform = new TransformGroup(wallsPointW);
         wallWTransform.addChild(wallW);
         wezel_scena.addChild(wallWTransform);
+
         // east wall
         Box wallE = new Box(0.01f,3f,6f,Box.GENERATE_TEXTURE_COORDS,wallsApperance);
         Transform3D wallsPointE = new Transform3D();
@@ -314,6 +319,27 @@ public class RobotApp extends Applet implements KeyListener {
         TransformGroup manipulatorLeftGroup = new TransformGroup(manipulatorLeftPoint);
         manipulatorLeftGroup.addChild(manipulatorLeft);
         manipulatorGroup.addChild(manipulatorLeftGroup);
+
+        // movable blocks
+        Appearance  block_appearance = new Appearance();
+        Texture woodTexture = new TextureLoader("images/wood.jpg", this).getTexture();
+        block_appearance.setTexture(woodTexture);
+        TransformGroup blocks_transgroup = new TransformGroup();
+
+        //bigger block
+        Box block1 = new Box(0.13f,0.13f,0.13f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
+        Transform3D block1_transform = new Transform3D();
+        block1_transform.set(new Vector3f(-0.12f,0.45f,r-0.3f));
+
+        TransformGroup block1_group = new TransformGroup();
+        block1_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        block1_group.setTransform(block1_transform);
+
+        block1_group.addChild(block1);
+        manipulatorGroup.addChild(block1_group);
+        wezel_scena.addChild(blocks_transgroup);
+
+
 
          return wezel_scena;
 

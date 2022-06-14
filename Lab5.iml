@@ -7,6 +7,16 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Lab5" level="project" />
+    <orderEntry type="library" exported="" name="Lab5" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://C:/Program Files/java3d" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://C:/Program Files/java3d" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
