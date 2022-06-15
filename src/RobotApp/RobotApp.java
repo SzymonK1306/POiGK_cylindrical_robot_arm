@@ -24,7 +24,6 @@ import javax.media.j3d.Transform3D;
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.universe.ViewingPlatform;
 
-import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
@@ -47,6 +46,11 @@ public class RobotApp extends Applet implements KeyListener {
     private TransformGroup fiTransform;
     TransformGroup armTransform;
     TransformGroup rAxisGroup;
+    TransformGroup blocks_group;
+    TransformGroup manipulatorGroup;
+    TransformGroup block1_group;
+    TransformGroup block2_group;
+    TransformGroup rack;
 
     BoundingSphere bounds;
 
@@ -70,6 +74,7 @@ public class RobotApp extends Applet implements KeyListener {
     private int dfi = 0;
 
     private boolean inverse = false;
+    private boolean pick_up = false;
 
 //    private int i=0;
 //    private int j=0;
@@ -104,6 +109,15 @@ public class RobotApp extends Applet implements KeyListener {
                 }
 
             }
+                // wywala blad ze tylko mozna branchgroups usuwac
+//            if (pick_up) {
+//                blocks_group.removeChild(block1_group);
+//                manipulatorGroup.addChild(block1_group);
+//            }
+//            else {
+//                manipulatorGroup.removeChild(block1_group);
+//                blocks_group.addChild(block1_group);
+//            }
         }
     }
 
@@ -295,8 +309,10 @@ public class RobotApp extends Applet implements KeyListener {
         armTransform.addChild(rAxisGroup);
 
         // manipulator
-        TransformGroup manipulatorGroup = new TransformGroup();
+        manipulatorGroup = new TransformGroup();
         rAxisGroup.addChild(manipulatorGroup);
+        manipulatorGroup.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+        manipulatorGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
 
         // manipulator stand
         Box manipulatorStand = new Box(0.02f,0.01f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
@@ -320,28 +336,83 @@ public class RobotApp extends Applet implements KeyListener {
         manipulatorLeftGroup.addChild(manipulatorLeft);
         manipulatorGroup.addChild(manipulatorLeftGroup);
 
-        // movable blocks
-        Appearance  block_appearance = new Appearance();
+        // shelf rack
         Texture woodTexture = new TextureLoader("images/wood.jpg", this).getTexture();
-        block_appearance.setTexture(woodTexture);
-        TransformGroup blocks_transgroup = new TransformGroup();
+        Appearance shelf_appearance = new Appearance();
+        shelf_appearance.setTexture(woodTexture);
+        rack = new TransformGroup();
 
-        //bigger block
-        Box block1 = new Box(0.13f,0.13f,0.13f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
+        // rack sides
+        Box rackSideLeft = new Box(0.15f, 0.65f, 0.03f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
+        Transform3D rackSideLeft_transform = new Transform3D();
+        rackSideLeft_transform.set(new Vector3f(-1.25f,-0.2f,0.5f));
+        TransformGroup rackSideLeft_group = new TransformGroup();
+        rackSideLeft_group.addChild(rackSideLeft);
+        rackSideLeft_group.setTransform(rackSideLeft_transform);
+        rack.addChild(rackSideLeft_group);
+
+        Box rackSideRight = new Box(0.15f, 0.65f, 0.03f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
+        Transform3D rackSideRight_transform = new Transform3D();
+        rackSideRight_transform.set(new Vector3f(-1.25f,-0.2f,-0.5f));
+        TransformGroup rackSideRight_group = new TransformGroup();
+        rackSideRight_group.addChild(rackSideRight);
+        rackSideRight_group.setTransform(rackSideRight_transform);
+        rack.addChild(rackSideRight_group);
+
+        // shelves
+        Box shelfLower = new Box(0.15f, 0.03f, 0.5f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
+        Transform3D shelfLower_transform = new Transform3D();
+        shelfLower_transform.set(new Vector3f(-1.25f,-0.6f,0f));
+        TransformGroup shelfLower_group = new TransformGroup();
+        shelfLower_group.addChild(shelfLower);
+        shelfLower_group.setTransform(shelfLower_transform);
+        rack.addChild(shelfLower_group);
+
+        Box shelfUpper = new Box(0.15f, 0.03f, 0.5f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
+        Transform3D shelfUpper_transform = new Transform3D();
+        shelfUpper_transform.set(new Vector3f(-1.25f,-0.1f,0f));
+        TransformGroup shelfUpper_group = new TransformGroup();
+        shelfUpper_group.addChild(shelfUpper);
+        shelfUpper_group.setTransform(shelfUpper_transform);
+        rack.addChild(shelfUpper_group);
+
+        wezel_scena.addChild(rack);
+
+        // movable blocks
+        Appearance block_appearance = new Appearance();
+        Texture boxTexture = new TextureLoader("images/cardboard.jpg", this).getTexture();
+        block_appearance.setTexture(boxTexture);
+        blocks_group = new TransformGroup();
+        blocks_group.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+        blocks_group.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+
+        //block 1
+        Box block1 = new Box(0.12f,0.12f,0.12f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
         Transform3D block1_transform = new Transform3D();
-        block1_transform.set(new Vector3f(-0.12f,0.45f,r-0.3f));
+        block1_transform.set(new Vector3f(-0.115f,0.435f,r-0.3f));
 
-        TransformGroup block1_group = new TransformGroup();
+        block1_group = new TransformGroup();
+        block1_group.addChild(block1);
         block1_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         block1_group.setTransform(block1_transform);
-
-        block1_group.addChild(block1);
         manipulatorGroup.addChild(block1_group);
-        wezel_scena.addChild(blocks_transgroup);
+        //blocks_group.addChild(block1_group);
 
+        //block 2
+        Box block2 = new Box(0.12f,0.12f,0.12f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
+        Transform3D block2_transform = new Transform3D();
+        block2_transform.set(new Vector3f(-1.25f,0.02f,0f));
 
+        block2_group = new TransformGroup();
+        block2_group.addChild(block2);
+        block2_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        block2_group.setTransform(block2_transform);
+        //manipulatorGroup.addChild(block2_group);
+        blocks_group.addChild(block2_group);
 
-         return wezel_scena;
+        wezel_scena.addChild(blocks_group);
+
+        return wezel_scena;
 
     }
 
@@ -356,22 +427,22 @@ public class RobotApp extends Applet implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_Q) {
             fi-=0.02;       // angle (radians)
         }
-        if (e.getKeyCode()==KeyEvent.VK_E){
+        if (e.getKeyCode() == KeyEvent.VK_E){
             fi+=0.02;
         }
-        if (e.getKeyCode()==KeyEvent.VK_A){
+        if (e.getKeyCode() == KeyEvent.VK_A){
             if (r >0.05)
                 r-=0.02;
         }
-        if (e.getKeyCode()==KeyEvent.VK_D){
+        if (e.getKeyCode() == KeyEvent.VK_D){
             if (r<0.6)
                 r+=0.02;
         }
-        if (e.getKeyCode()==KeyEvent.VK_W){
+        if (e.getKeyCode() == KeyEvent.VK_W){
             if (z<0.3)
                 z+=0.02;
         }
-        if (e.getKeyCode()==KeyEvent.VK_S){
+        if (e.getKeyCode() == KeyEvent.VK_S){
             if (z>-0.7)
                 z-=0.02;
         }
@@ -387,6 +458,9 @@ public class RobotApp extends Applet implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_K) {
             inverseKinematic();
             inverse=true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_P){
+            pick_up = !pick_up;
         }
     }
 
