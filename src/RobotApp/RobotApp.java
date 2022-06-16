@@ -39,6 +39,7 @@ public class RobotApp extends Applet implements KeyListener {
     Transform3D rAxisPoint;
     Transform3D armPoint;
 
+
     RotationInterpolator fiRotation;
 
     Vector3f cameraPosition = new Vector3f(0f, 0f, 5f);
@@ -46,11 +47,15 @@ public class RobotApp extends Applet implements KeyListener {
     private TransformGroup fiTransform;
     TransformGroup armTransform;
     TransformGroup rAxisGroup;
-    TransformGroup blocks_group;
     TransformGroup manipulatorGroup;
-    TransformGroup block1_group;
-    TransformGroup block2_group;
+
     TransformGroup rack;
+    BranchGroup blocks_group;
+    BranchGroup block1_branch;
+    TransformGroup block1_group;
+    Transform3D block1_transform;
+    Vector3f block1_position = new Vector3f();
+
 
     BoundingSphere bounds;
 
@@ -69,12 +74,15 @@ public class RobotApp extends Applet implements KeyListener {
     private float new_r = 0.3f;
     private float new_z = -0.7f;
 
+    //private double block_rotation = 0;
+
     private int dr = 0;
     private int dz = 0;
     private int dfi = 0;
 
     private boolean inverse = false;
     private boolean pick_up = false;
+    private boolean zatrzask = false;
 
 //    private int i=0;
 //    private int j=0;
@@ -109,15 +117,31 @@ public class RobotApp extends Applet implements KeyListener {
                 }
 
             }
-                // wywala blad ze tylko mozna branchgroups usuwac
-//            if (pick_up) {
-//                blocks_group.removeChild(block1_group);
-//                manipulatorGroup.addChild(block1_group);
-//            }
-//            else {
-//                manipulatorGroup.removeChild(block1_group);
-//                blocks_group.addChild(block1_group);
-//            }
+
+            if (pick_up && zatrzask) {
+                blocks_group.removeChild(block1_branch);
+                manipulatorGroup.addChild(block1_branch);
+
+                block1_position.set(-0.115f,0.435f,r-0.3f);
+                block1_transform.set(block1_position);
+                block1_group.setTransform(block1_transform);
+
+                //block_rotation = Math.PI/2;
+                zatrzask = false;
+            }
+            else if (!pick_up && zatrzask) {
+
+                manipulatorGroup.removeChild(block1_branch);
+                blocks_group.addChild(block1_branch);
+
+                //tu bedzie poprzednia pozycja po dodaniu fi, r i z
+                block1_position.set(-1.25f,-0.45f,0f);
+                block1_transform.set(block1_position);
+                block1_group.setTransform(block1_transform);
+
+                //block_rotation = 0;
+                zatrzask = false;
+            }
         }
     }
 
@@ -240,8 +264,6 @@ public class RobotApp extends Applet implements KeyListener {
         wezel_scena.addChild(wallETransform);
 
 
-
-
         // vertical robot axis
         Appearance  robotApperance1 = new Appearance();
         Texture steelTexture = new TextureLoader("images/steel.jpg", this).getTexture();
@@ -310,9 +332,16 @@ public class RobotApp extends Applet implements KeyListener {
 
         // manipulator
         manipulatorGroup = new TransformGroup();
-        rAxisGroup.addChild(manipulatorGroup);
+        manipulatorGroup.setCapability(TransformGroup.ALLOW_CHILDREN_READ);
         manipulatorGroup.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
         manipulatorGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+
+
+//        manipulator_branch = new BranchGroup();
+//        manipulator_branch.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+//        manipulator_branch.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+//        manipulator_branch.addChild(manipulatorGroup);
+        rAxisGroup.addChild(manipulatorGroup);
 
         // manipulator stand
         Box manipulatorStand = new Box(0.02f,0.01f,0.1f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
@@ -378,32 +407,44 @@ public class RobotApp extends Applet implements KeyListener {
 
         wezel_scena.addChild(rack);
 
+
         // movable blocks
         Appearance block_appearance = new Appearance();
         Texture boxTexture = new TextureLoader("images/cardboard.jpg", this).getTexture();
         block_appearance.setTexture(boxTexture);
-        blocks_group = new TransformGroup();
-        blocks_group.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
-        blocks_group.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+        blocks_group = new BranchGroup();
+        blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
+        blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+        blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
 
         //block 1
         Box block1 = new Box(0.12f,0.12f,0.12f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
-        Transform3D block1_transform = new Transform3D();
-        block1_transform.set(new Vector3f(-0.115f,0.435f,r-0.3f));
+        block1_transform = new Transform3D();
+        block1_position.set(-1.25f,-0.45f,0f);
+        block1_transform.set(block1_position);
+
+//        Transform3D blockRotation = new Transform3D();
+//        blockRotation.rotZ(block_rotation);
+//        block1_transform.mul(blockRotation);
 
         block1_group = new TransformGroup();
         block1_group.addChild(block1);
         block1_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        block1_group.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
         block1_group.setTransform(block1_transform);
-        manipulatorGroup.addChild(block1_group);
-        //blocks_group.addChild(block1_group);
+
+        block1_branch = new BranchGroup();
+        block1_branch.setCapability(BranchGroup.ALLOW_DETACH);
+        block1_branch.addChild(block1_group);
+        blocks_group.addChild(block1_branch);
+
 
         //block 2
         Box block2 = new Box(0.12f,0.12f,0.12f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
         Transform3D block2_transform = new Transform3D();
-        block2_transform.set(new Vector3f(-1.25f,0.02f,0f));
+        block2_transform.set(new Vector3f(-1.25f,0.05f,0f));
 
-        block2_group = new TransformGroup();
+        TransformGroup block2_group = new TransformGroup();
         block2_group.addChild(block2);
         block2_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         block2_group.setTransform(block2_transform);
@@ -461,6 +502,8 @@ public class RobotApp extends Applet implements KeyListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_P){
             pick_up = !pick_up;
+            zatrzask = true;
+            //System.out.println(pick_up);
         }
     }
 
