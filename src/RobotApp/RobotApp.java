@@ -74,7 +74,7 @@ public class RobotApp extends Applet implements KeyListener {
     private float new_r = 0.3f;
     private float new_z = -0.7f;
 
-    //private double block_rotation = 0;
+    private double block_rotation = Math.PI/2;
 
     private int dr = 0;
     private int dz = 0;
@@ -122,11 +122,13 @@ public class RobotApp extends Applet implements KeyListener {
                 blocks_group.removeChild(block1_branch);
                 manipulatorGroup.addChild(block1_branch);
 
-                block1_position.set(-0.115f,0.435f,r-0.3f);
+                block1_position.set(-0.115f,0.435f,0f);
                 block1_transform.set(block1_position);
+                Transform3D blockRotation = new Transform3D();
+                blockRotation.rotZ(block_rotation);
+                block1_transform.mul(blockRotation);
                 block1_group.setTransform(block1_transform);
 
-                //block_rotation = Math.PI/2;
                 zatrzask = false;
             }
             else if (!pick_up && zatrzask) {
@@ -134,12 +136,17 @@ public class RobotApp extends Applet implements KeyListener {
                 manipulatorGroup.removeChild(block1_branch);
                 blocks_group.addChild(block1_branch);
 
-                //tu bedzie poprzednia pozycja po dodaniu fi, r i z
-                block1_position.set(-1.25f,-0.45f,0f);
+
+                float b1_x = (float)((r+0.735) * Math.cos(fi));
+                float b1_y = (float)((-r-0.735) * Math.sin(fi));
+                float b1_z = z + 0.115f;
+
+                //block1_position.set(-1.25f,-0.45f,0f);
+                block1_position.set(b1_x,b1_z,b1_y);
                 block1_transform.set(block1_position);
                 block1_group.setTransform(block1_transform);
 
-                //block_rotation = 0;
+
                 zatrzask = false;
             }
         }
@@ -422,10 +429,6 @@ public class RobotApp extends Applet implements KeyListener {
         block1_transform = new Transform3D();
         block1_position.set(-1.25f,-0.45f,0f);
         block1_transform.set(block1_position);
-
-//        Transform3D blockRotation = new Transform3D();
-//        blockRotation.rotZ(block_rotation);
-//        block1_transform.mul(blockRotation);
 
         block1_group = new TransformGroup();
         block1_group.addChild(block1);
