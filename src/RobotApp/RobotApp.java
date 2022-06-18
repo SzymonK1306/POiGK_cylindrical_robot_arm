@@ -502,6 +502,28 @@ public class RobotApp extends Applet implements KeyListener {
 
         wezel_scena.addChild(blocks_group);
 
+        Shape3D caton = new Box1(0.3, 0.3, 0.3);
+        Transform3D shapePoint = new Transform3D();
+        shapePoint.set(new Vector3f(1.2f,-0.5f,0f));
+        TransformGroup shapeGroup = new TransformGroup(shapePoint);
+        shapeGroup.addChild(caton);
+        wezel_scena.addChild(shapeGroup);
+
+        // Create a new ColoringAttributes object for the caton's
+        // appearance and make it writable at runtime.
+        Appearance app = caton.getAppearance();
+        ColoringAttributes ca = new ColoringAttributes();
+        ca.setColor(1.0f, 0.0f, 0.0f);
+        app.setCapability(app.ALLOW_COLORING_ATTRIBUTES_WRITE);
+        app.setColoringAttributes(ca);
+
+        CollisionDetector cd = new CollisionDetector(caton);
+        BoundingSphere bounds =
+                new BoundingSphere(new Point3d(0.0,0.0,0.0), 100.0);
+        cd.setSchedulingBounds(bounds);
+
+        wezel_scena.addChild(cd);
+
         return wezel_scena;
 
     }
