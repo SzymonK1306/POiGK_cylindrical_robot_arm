@@ -33,7 +33,7 @@ public class CollisionDetector extends Behavior {
         wakeupOn(wEnter);
     }
 
-    public void processStimulus(Enumeration criteria) {
+    public void processStimulus(Enumeration criteria) {     // collision detection
         inCollision = !inCollision;
 
         if (inCollision) {

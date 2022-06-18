@@ -319,6 +319,13 @@ public class RobotPanel extends javax.swing.JPanel{
         return z;
     }
 
+    public void setPRed(){
+        P.setBackground(new java.awt.Color(255, 0, 0));
+    }
+    public void setPGreen(){
+        P.setBackground(new java.awt.Color(102, 255, 102));
+    }
+
 
     private javax.swing.JButton A;
     private javax.swing.JButton B;

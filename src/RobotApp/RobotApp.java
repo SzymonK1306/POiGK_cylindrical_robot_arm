@@ -122,74 +122,78 @@ public class RobotApp extends Applet implements KeyListener {
 
         @Override
         public void run() {
-            fiRotation.setMaximumAngle(fi);
+            fiRotation.setMaximumAngle(fi);     //set fi angle
             fiRotation.setMinimumAngle(fi);
-            rAxisPoint.setTranslation(new Vector3f(r, 0, 0));
+            rAxisPoint.setTranslation(new Vector3f(r, 0, 0));       // set r position
             rAxisGroup.setTransform(rAxisPoint);
-            armPoint.setTranslation(new Vector3f(0.3f, z, 0));
+            armPoint.setTranslation(new Vector3f(0.3f, z, 0));      //set z position
             armTransform.setTransform(armPoint);
 
+            // collisions with objects
             inCollisionBlock = blockCollision.getInCollision();
             inCollisionPole1 = pole1Collision.getInCollision();
             inCollisionPole2 = pole2Collision.getInCollision();
 
-            if ((inCollisionBlock)||(inCollisionPole1||inCollisionPole2)){
-                allowPickUp=true;
-            }
-            else {
-                allowPickUp=false;
+            // allow pick up and down the object
+            if (inCollisionPole1 || inCollisionPole2) {
+                panel.setPGreen();
+                allowPickUp = true;
+            } else {
+                allowPickUp = false;
+                panel.setPRed();
             }
 
-            if (inCollisionBlock||inCollisionPole1||inCollisionPole2){
-                fi=prev_fi;
-                r=prev_r;
-                z=prev_z;
+            // moving manipulator away from the block
+            if (inCollisionBlock) {
+                fi = prev_fi;
+                r = prev_r;
+                z = prev_z;
+            } else {
+                prev_fi = fi;
+                prev_r = r;
+                prev_z = z;
             }
-            else {
-                prev_fi=fi;
-                prev_r=r;
-                prev_z=z;
-            }
+            // inverse kinematics realisation
             if (inverse) {
-                dr = (int)((new_r-r)*100);
-                dz=(int)((new_z-z)*100);
-                dfi=(int)((new_fi-fi)*100);
-                if (0!=dfi){
-                    fi=fi+Math.signum(dfi)*0.01f;
-                }
-                else if (0!=dz){
-                    z=z+Math.signum(dz)*0.01f;
-                }
-                else if (0!=dr){
-                    r=r+Math.signum(dr)*0.01f;
-                }
-                else {
-                    inverse=false;
+                dr = (int) ((new_r - r) * 100);
+                dz = (int) ((new_z - z) * 100);
+                dfi = (int) ((new_fi - fi) * 100);
+                if (0 != dfi) {
+                    fi = fi + Math.signum(dfi) * 0.01f;
+                } else if (0 != dz) {
+                    z = z + Math.signum(dz) * 0.01f;
+                } else if (0 != dr) {
+                    r = r + Math.signum(dr) * 0.01f;
+                } else {
+                    inverse = false;
                 }
 
             }
-            if (recording){
+            // recording movements of the robot
+            if (recording) {
                 r_recorded.add(r);
                 fi_recorded.add(fi);
                 z_recorded.add(z);
             }
-            if (playing){
-                if (i<r_recorded.size()){
-                    r=r_recorded.get(i);
-                    fi=fi_recorded.get(i);
-                    z=z_recorded.get(i);
-                    i+=1;
-                }
-                else{
-                    playing=false;
+            // playing recorded movements
+            if (playing) {
+                if (i < r_recorded.size()) {
+                    r = r_recorded.get(i);
+                    fi = fi_recorded.get(i);
+                    z = z_recorded.get(i);
+                    i += 1;
+                } else {
+                    playing = false;
                 }
             }
 
             if (pick_up && zatrzask && inCollisionBlock) {
+                z += 0.06f;
+                prev_z += 0.06f;
                 blocks_group.removeChild(block_branch);
                 manipulatorGroup.addChild(block_branch);
 
-                block_position.set(-0.115f,0.435f,0f);
+                block_position.set(-0.115f, 0.435f, 0f);
                 block_transform.set(block_position);
                 Transform3D blockRotation = new Transform3D();
                 blockRotation.rotZ(block_rotation);
@@ -197,27 +201,29 @@ public class RobotApp extends Applet implements KeyListener {
                 block_group.setTransform(block_transform);
 
                 zatrzask = false;
-            }
-            else if (!pick_up && zatrzask) {
+            } else if (!pick_up && zatrzask) {
 
                 manipulatorGroup.removeChild(block_branch);
                 blocks_group.addChild(block_branch);
 
-                float b1_x = (float)((r+0.735) * Math.cos(fi));
-                float b1_y = (float)((-r-0.735) * Math.sin(fi));
-                float b1_z = z + 0.115f;
+                float b1_x = (float) ((r + 0.735) * Math.cos(fi));
+                float b1_y = (float) ((-r - 0.735) * Math.sin(fi));
+                float b1_z = -0.46f;
 
                 //block1_position.set(-1.25f,-0.45f,0f);
-                block_position.set(b1_x,b1_z,b1_y);
+                block_position.set(b1_x, b1_z, b1_y);
                 block_transform.set(block_position);
                 block_group.setTransform(block_transform);
+
+                z -= 0.08f;
+                prev_z -= 0.08f;
 
 
                 zatrzask = false;
             }
         }
     }
-    public void play(){
+    public void play(){     // Function to play music
         InputStream music;
         try{
             music = new FileInputStream(new File("sounds/dla-elizy.wav"));
@@ -232,6 +238,7 @@ public class RobotApp extends Applet implements KeyListener {
 
 
     RobotApp(){
+        // initialisation of the window
         setLayout(new BorderLayout());
         canvas3D.setPreferredSize(new Dimension(1280, 960));
         canvas3D.addKeyListener(this);
@@ -253,7 +260,7 @@ public class RobotApp extends Applet implements KeyListener {
 
         view.setNominalViewingTransform();
 
-
+        // orbit behavior (camera movement)
         OrbitBehavior orbit = new OrbitBehavior(canvas3D, OrbitBehavior.REVERSE_ROTATE | OrbitBehavior.STOP_ZOOM);
         orbit.setReverseTranslate(true);
         orbit.setMinRadius(1.0);
@@ -356,7 +363,7 @@ public class RobotApp extends Applet implements KeyListener {
         Appearance  robotApperance2 = new Appearance();
         Texture lightSteelTexture = new TextureLoader("images/lightSteel.jpg", this).getTexture();
         robotApperance2.setTexture(lightSteelTexture);
-        //robotApperance1.setColoringAttributes(new ColoringAttributes(0.6f,0.5f,0.9f,ColoringAttributes.NICEST));
+
         Box stand = new Box(0.15f,0.02f,0.15f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
         Transform3D standPoint = new Transform3D();
         standPoint.set(new Vector3f(0f,-0.83f,0f));
@@ -436,6 +443,7 @@ public class RobotApp extends Applet implements KeyListener {
         manipulatorStandGroup.addChild(manipulatorStand);
         manipulatorGroup.addChild(manipulatorStandGroup);
 
+        // right part of the manipulator
         Box manipulatorRight = new Box(0.005f,0.1f,0.02f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
         Transform3D manipulatorRightPoint = new Transform3D();
         manipulatorRightPoint.set(new Vector3f(0.015f,r+0.09f,0.07f));
@@ -443,55 +451,13 @@ public class RobotApp extends Applet implements KeyListener {
         manipulatorRightGroup.addChild(manipulatorRight);
         manipulatorGroup.addChild(manipulatorRightGroup);
 
+        // left part of the manipulator
         Box manipulatorLeft = new Box(0.005f,0.1f,0.02f,Box.GENERATE_TEXTURE_COORDS, robotApperance1);
         Transform3D manipulatorLeftPoint = new Transform3D();
         manipulatorLeftPoint.set(new Vector3f(0.015f,r+0.09f,-0.07f));
         TransformGroup manipulatorLeftGroup = new TransformGroup(manipulatorLeftPoint);
         manipulatorLeftGroup.addChild(manipulatorLeft);
         manipulatorGroup.addChild(manipulatorLeftGroup);
-
-        // shelf rack
-//        Texture woodTexture = new TextureLoader("images/wood.jpg", this).getTexture();
-//        Appearance shelf_appearance = new Appearance();
-//        shelf_appearance.setTexture(woodTexture);
-//        rack = new TransformGroup();
-
-        // rack sides
-//        Box rackSideLeft = new Box(0.15f, 0.65f, 0.03f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
-//        Transform3D rackSideLeft_transform = new Transform3D();
-//        rackSideLeft_transform.set(new Vector3f(-1.25f,-0.2f,0.5f));
-//        TransformGroup rackSideLeft_group = new TransformGroup();
-//        rackSideLeft_group.addChild(rackSideLeft);
-//        rackSideLeft_group.setTransform(rackSideLeft_transform);
-//        rack.addChild(rackSideLeft_group);
-//
-//        Box rackSideRight = new Box(0.15f, 0.65f, 0.03f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
-//        Transform3D rackSideRight_transform = new Transform3D();
-//        rackSideRight_transform.set(new Vector3f(-1.25f,-0.2f,-0.5f));
-//        TransformGroup rackSideRight_group = new TransformGroup();
-//        rackSideRight_group.addChild(rackSideRight);
-//        rackSideRight_group.setTransform(rackSideRight_transform);
-//        rack.addChild(rackSideRight_group);
-
-        // shelves
-//        Box shelfLower = new Box(0.15f, 0.03f, 0.5f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
-//        Transform3D shelfLower_transform = new Transform3D();
-//        shelfLower_transform.set(new Vector3f(-1.25f,-0.6f,0f));
-//        TransformGroup shelfLower_group = new TransformGroup();
-//        shelfLower_group.addChild(shelfLower);
-//        shelfLower_group.setTransform(shelfLower_transform);
-//        rack.addChild(shelfLower_group);
-//
-//        Box shelfUpper = new Box(0.15f, 0.03f, 0.5f, Box.GENERATE_TEXTURE_COORDS, shelf_appearance);
-//        Transform3D shelfUpper_transform = new Transform3D();
-//        shelfUpper_transform.set(new Vector3f(-1.25f,-0.1f,0f));
-//        TransformGroup shelfUpper_group = new TransformGroup();
-//        shelfUpper_group.addChild(shelfUpper);
-//        shelfUpper_group.setTransform(shelfUpper_transform);
-//        rack.addChild(shelfUpper_group);
-//
-//        wezel_scena.addChild(rack);
-
 
         // movable blocks
 
@@ -519,15 +485,14 @@ public class RobotApp extends Applet implements KeyListener {
 
         wezel_scena.addChild(blocks_group);
 
-        // Create a new ColoringAttributes object for the block's
-        // appearance and make it writable at runtime.
+        // appearance of the block
         Appearance appBlock = block.getAppearance();
         ColoringAttributes caBlock = new ColoringAttributes();
         caBlock.setColor(1.0f, 0.0f, 0.0f);
         appBlock.setCapability(appBlock.ALLOW_COLORING_ATTRIBUTES_WRITE);
         appBlock.setColoringAttributes(caBlock);
 
-
+        // initialise collision detector for block
         blockCollision = new CollisionDetector(block);
         BoundingSphere bounds =
                 new BoundingSphere(new Point3d(0.0,0.0,0.0), 100.0);
@@ -535,7 +500,8 @@ public class RobotApp extends Applet implements KeyListener {
 
         block_branch.addChild(blockCollision);
 
-        Shape3D pole1 = new Box1(0.025f, 0.25f, 0.025f);
+        // poles
+        Shape3D pole1 = new Box1(0.05f, 0.25f, 0.05f);
         Appearance appPole1 = pole1.getAppearance();
         ColoringAttributes caPole = new ColoringAttributes();
         caPole.setColor(0.26f, 0.18f, 0.02f);
@@ -548,7 +514,7 @@ public class RobotApp extends Applet implements KeyListener {
         pole1Group.addChild(pole1);
         wezel_scena.addChild(pole1Group);
 
-        Shape3D pole2 = new Box1(0.025f, 0.25f, 0.025f);
+        Shape3D pole2 = new Box1(0.05f, 0.25f, 0.05f);
         Appearance appPole2 = pole2.getAppearance();
         appPole2.setCapability(appPole2.ALLOW_COLORING_ATTRIBUTES_WRITE);
         appPole2.setColoringAttributes(caPole);
@@ -559,6 +525,7 @@ public class RobotApp extends Applet implements KeyListener {
         pole2Group.addChild(pole2);
         wezel_scena.addChild(pole2Group);
 
+        // collision detectors for poles
         pole1Collision = new CollisionDetector(pole1);
 
         pole1Collision.setSchedulingBounds(bounds);
@@ -652,7 +619,7 @@ public class RobotApp extends Applet implements KeyListener {
 
     }
 
-    public void inverseKinematic(){
+    public void inverseKinematic(){     // function which realises inverse kinematics
         float x = panel.getXvalue();
         float y = panel.getYvalue();
         float z1 = panel.getZvalue()-0.7f;
