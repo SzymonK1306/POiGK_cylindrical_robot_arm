@@ -57,10 +57,10 @@ public class RobotApp extends Applet implements KeyListener {
 
     TransformGroup rack;
     BranchGroup blocks_group;
-    BranchGroup block1_branch;
-    TransformGroup block1_group;
-    Transform3D block1_transform;
-    Vector3f block1_position = new Vector3f();
+    BranchGroup block_branch;
+    TransformGroup block_group;
+    Transform3D block_transform;
+    Vector3f block_position = new Vector3f();
 
 
     BoundingSphere bounds;
@@ -153,32 +153,31 @@ public class RobotApp extends Applet implements KeyListener {
             }
 
             if (pick_up && zatrzask) {
-                blocks_group.removeChild(block1_branch);
-                manipulatorGroup.addChild(block1_branch);
+                blocks_group.removeChild(block_branch);
+                manipulatorGroup.addChild(block_branch);
 
-                block1_position.set(-0.115f,0.435f,0f);
-                block1_transform.set(block1_position);
+                block_position.set(-0.115f,0.435f,0f);
+                block_transform.set(block_position);
                 Transform3D blockRotation = new Transform3D();
                 blockRotation.rotZ(block_rotation);
-                block1_transform.mul(blockRotation);
-                block1_group.setTransform(block1_transform);
+                block_transform.mul(blockRotation);
+                block_group.setTransform(block_transform);
 
                 zatrzask = false;
             }
             else if (!pick_up && zatrzask) {
 
-                manipulatorGroup.removeChild(block1_branch);
-                blocks_group.addChild(block1_branch);
-
+                manipulatorGroup.removeChild(block_branch);
+                blocks_group.addChild(block_branch);
 
                 float b1_x = (float)((r+0.735) * Math.cos(fi));
                 float b1_y = (float)((-r-0.735) * Math.sin(fi));
                 float b1_z = z + 0.115f;
 
                 //block1_position.set(-1.25f,-0.45f,0f);
-                block1_position.set(b1_x,b1_z,b1_y);
-                block1_transform.set(block1_position);
-                block1_group.setTransform(block1_transform);
+                block_position.set(b1_x,b1_z,b1_y);
+                block_transform.set(block_position);
+                block_group.setTransform(block_transform);
 
 
                 zatrzask = false;
@@ -462,62 +461,41 @@ public class RobotApp extends Applet implements KeyListener {
 
 
         // movable blocks
-        Appearance block_appearance = new Appearance();
-        Texture boxTexture = new TextureLoader("images/cardboard.jpg", this).getTexture();
-        block_appearance.setTexture(boxTexture);
+
         blocks_group = new BranchGroup();
         blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
         blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
         blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
 
-        //block 1
-        Box block1 = new Box(0.12f,0.12f,0.12f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
-        block1_transform = new Transform3D();
-        block1_position.set(-1.25f,-0.45f,0f);
-        block1_transform.set(block1_position);
+        Shape3D block = new Box1(0.25f, 0.25f, 0.25f);
 
-        block1_group = new TransformGroup();
-        block1_group.addChild(block1);
-        block1_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        block1_group.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-        block1_group.setTransform(block1_transform);
+        block_transform = new Transform3D();
+        block_position.set(-1.25f,-0.45f,0f);
+        block_transform.set(block_position);
 
-        block1_branch = new BranchGroup();
-        block1_branch.setCapability(BranchGroup.ALLOW_DETACH);
-        block1_branch.addChild(block1_group);
-        blocks_group.addChild(block1_branch);
+        block_group = new TransformGroup();
+        block_group.addChild(block);
+        block_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        block_group.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+        block_group.setTransform(block_transform);
 
-
-        //block 2
-        Box block2 = new Box(0.12f,0.12f,0.12f,Box.GENERATE_TEXTURE_COORDS, block_appearance);
-        Transform3D block2_transform = new Transform3D();
-        block2_transform.set(new Vector3f(-1.25f,0.05f,0f));
-
-        TransformGroup block2_group = new TransformGroup();
-        block2_group.addChild(block2);
-        block2_group.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        block2_group.setTransform(block2_transform);
-        //manipulatorGroup.addChild(block2_group);
-        blocks_group.addChild(block2_group);
+        block_branch = new BranchGroup();
+        block_branch.setCapability(BranchGroup.ALLOW_DETACH);
+        block_branch.addChild(block_group);
+        blocks_group.addChild(block_branch);
 
         wezel_scena.addChild(blocks_group);
 
-        Shape3D caton = new Box1(0.3, 0.3, 0.3);
-        Transform3D shapePoint = new Transform3D();
-        shapePoint.set(new Vector3f(1.2f,-0.5f,0f));
-        TransformGroup shapeGroup = new TransformGroup(shapePoint);
-        shapeGroup.addChild(caton);
-        wezel_scena.addChild(shapeGroup);
-
-        // Create a new ColoringAttributes object for the caton's
+        // Create a new ColoringAttributes object for the block's
         // appearance and make it writable at runtime.
-        Appearance app = caton.getAppearance();
+        Appearance app = block.getAppearance();
         ColoringAttributes ca = new ColoringAttributes();
         ca.setColor(1.0f, 0.0f, 0.0f);
         app.setCapability(app.ALLOW_COLORING_ATTRIBUTES_WRITE);
         app.setColoringAttributes(ca);
 
-        CollisionDetector cd = new CollisionDetector(caton);
+
+        CollisionDetector cd = new CollisionDetector(block);
         BoundingSphere bounds =
                 new BoundingSphere(new Point3d(0.0,0.0,0.0), 100.0);
         cd.setSchedulingBounds(bounds);
