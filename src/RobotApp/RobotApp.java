@@ -10,8 +10,12 @@ import javax.media.j3d.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.TimerTask;
 import java.lang.Math;
+import java.util.Vector;
 import javax.swing.*;
 
 import com.sun.j3d.utils.image.TextureLoader;
@@ -23,6 +27,8 @@ import javax.media.j3d.Transform3D;
 
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.universe.ViewingPlatform;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
@@ -80,13 +86,25 @@ public class RobotApp extends Applet implements KeyListener {
     private int dz = 0;
     private int dfi = 0;
 
+    Vector<Float> r_recorded = new Vector<>();
+    Vector<Float> fi_recorded = new Vector<>();
+    Vector<Float> z_recorded = new Vector<>();
+
+    private float start_fi;
+    private float start_r;
+    private float start_z;
+
     private boolean inverse = false;
     private boolean pick_up = false;
     private boolean zatrzask = false;
+    private boolean recording = false;
+    private boolean playing = false;
+    private boolean musicLatch=true;
 
-//    private int i=0;
-//    private int j=0;
-//    private int k=0;
+
+    private int i=0;
+    private int j=0;
+    private int k=0;
 
     // task which is done in every 17 milliseconds
     class Task extends TimerTask {
@@ -116,6 +134,22 @@ public class RobotApp extends Applet implements KeyListener {
                     inverse=false;
                 }
 
+            }
+            if (recording){
+                r_recorded.add(r);
+                fi_recorded.add(fi);
+                z_recorded.add(z);
+            }
+            if (playing){
+                if (i<r_recorded.size()){
+                    r=r_recorded.get(i);
+                    fi=fi_recorded.get(i);
+                    z=z_recorded.get(i);
+                    i+=1;
+                }
+                else{
+                    playing=false;
+                }
             }
 
             if (pick_up && zatrzask) {
@@ -150,6 +184,18 @@ public class RobotApp extends Applet implements KeyListener {
                 zatrzask = false;
             }
         }
+    }
+    public void play(){
+        InputStream music;
+        try{
+            music = new FileInputStream(new File("sounds/dla-elizy.wav"));
+            AudioStream audios=new AudioStream(music);
+            AudioPlayer.player.start(audios);
+
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error");
+        }
+
     }
 
 
@@ -507,6 +553,22 @@ public class RobotApp extends Applet implements KeyListener {
             pick_up = !pick_up;
             zatrzask = true;
             //System.out.println(pick_up);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_N) {
+            recording=true;
+            start_fi=fi;
+            start_r=r;
+            start_z=z;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_M) {
+            recording=false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_O) {
+            playing=true;
+        }
+        if ((e.getKeyCode() == KeyEvent.VK_B)&&(musicLatch)) {
+            musicLatch=false;
+            play();
         }
     }
 
