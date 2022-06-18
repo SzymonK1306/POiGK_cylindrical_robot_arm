@@ -45,4 +45,7 @@ public class CollisionDetector extends Behavior {
             wakeupOn(wEnter);
         }
     }
+    public boolean getInCollision(){
+        return inCollision;
+    }
 }
