@@ -105,7 +105,7 @@ public class RobotApp extends Applet implements KeyListener {
 
     private boolean inverse = false;
     private boolean pick_up = false;
-    private boolean zatrzask = false;
+    private boolean pickupLatch = false;
     private boolean recording = false;
     private boolean playing = false;
     private boolean musicLatch=true;
@@ -155,6 +155,7 @@ public class RobotApp extends Applet implements KeyListener {
                 prev_r = r;
                 prev_z = z;
             }
+
             // inverse kinematics realisation
             if (inverse) {
                 dr = (int) ((new_r - r) * 100);
@@ -190,7 +191,8 @@ public class RobotApp extends Applet implements KeyListener {
                 }
             }
 
-            if (pick_up && zatrzask && inCollisionBlock) {
+            // placing the block on the manipulator and putting the block down in the new position
+            if (pick_up && pickupLatch && inCollisionBlock) {
                 z += 0.06f;
                 prev_z += 0.06f;
                 blocks_group.removeChild(block_branch);
@@ -203,8 +205,8 @@ public class RobotApp extends Applet implements KeyListener {
                 block_transform.mul(blockRotation);
                 block_group.setTransform(block_transform);
 
-                zatrzask = false;
-            } else if (!pick_up && zatrzask) {
+                pickupLatch = false;
+            } else if (!pick_up && pickupLatch) {
 
                 manipulatorGroup.removeChild(block_branch);
                 blocks_group.addChild(block_branch);
@@ -213,7 +215,6 @@ public class RobotApp extends Applet implements KeyListener {
                 float b1_y = (float) ((-r - 0.735) * Math.sin(fi));
                 float b1_z = -0.46f;
 
-                //block1_position.set(-1.25f,-0.45f,0f);
                 block_position.set(b1_x, b1_z, b1_y);
                 block_transform.set(block_position);
                 block_group.setTransform(block_transform);
@@ -221,8 +222,7 @@ public class RobotApp extends Applet implements KeyListener {
                 z -= 0.08f;
                 prev_z -= 0.08f;
 
-
-                zatrzask = false;
+                pickupLatch = false;
             }
         }
     }
@@ -256,11 +256,8 @@ public class RobotApp extends Applet implements KeyListener {
 
         // add mouse behaviors to the ViewingPlatform
         ViewingPlatform view = simpleU.getViewingPlatform();
-
         PlatformGeometry platform = new PlatformGeometry();
-
         view.setPlatformGeometry(platform);
-
         view.setNominalViewingTransform();
 
         // orbit behavior (camera movement)
@@ -358,7 +355,6 @@ public class RobotApp extends Applet implements KeyListener {
         wallETransform.addChild(wallE);
         wezel_scena.addChild(wallETransform);
 
-
         // vertical robot axis
         Appearance  robotApperance1 = new Appearance();
         Texture steelTexture = new TextureLoader("images/steel.jpg", this).getTexture();
@@ -431,11 +427,6 @@ public class RobotApp extends Applet implements KeyListener {
         manipulatorGroup.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
         manipulatorGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
 
-
-//        manipulator_branch = new BranchGroup();
-//        manipulator_branch.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-//        manipulator_branch.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-//        manipulator_branch.addChild(manipulatorGroup);
         rAxisGroup.addChild(manipulatorGroup);
 
         // manipulator stand
@@ -462,8 +453,7 @@ public class RobotApp extends Applet implements KeyListener {
         manipulatorLeftGroup.addChild(manipulatorLeft);
         manipulatorGroup.addChild(manipulatorLeftGroup);
 
-        // movable blocks
-
+        // movable block
         blocks_group = new BranchGroup();
         blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
         blocks_group.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
@@ -596,7 +586,7 @@ public class RobotApp extends Applet implements KeyListener {
         }
         if ((e.getKeyCode() == KeyEvent.VK_P)&&allowPickUp){
             pick_up = !pick_up;
-            zatrzask = true;
+            pickupLatch = true;
             //System.out.println(pick_up);
         }
         if (e.getKeyCode() == KeyEvent.VK_N) {
