@@ -41,21 +41,21 @@ public class RobotApp extends Applet implements KeyListener {
 
     Alpha animationFi;
 
-    private Transform3D camera = new Transform3D();
+    Transform3D camera = new Transform3D();
     Transform3D rAxisPoint;
     Transform3D armPoint;
 
 
     RotationInterpolator fiRotation;
 
+    // default camera position
     Vector3f cameraPosition = new Vector3f(0f, 0f, 5f);
 
-    private TransformGroup fiTransform;
+    TransformGroup fiTransform;
     TransformGroup armTransform;
     TransformGroup rAxisGroup;
     TransformGroup manipulatorGroup;
 
-    TransformGroup rack;
     BranchGroup blocks_group;
     BranchGroup block_branch;
     TransformGroup block_group;
@@ -71,6 +71,8 @@ public class RobotApp extends Applet implements KeyListener {
     SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 
     RobotPanel panel = new RobotPanel();
+
+    // Collision detectors
     CollisionDetector blockCollision;
     CollisionDetector pole1Collision;
     CollisionDetector pole2Collision;
@@ -184,6 +186,7 @@ public class RobotApp extends Applet implements KeyListener {
                     i += 1;
                 } else {
                     playing = false;
+                    i=0;
                 }
             }
 
